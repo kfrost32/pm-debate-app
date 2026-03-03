@@ -14,7 +14,6 @@ interface SettingsBarProps {
   onStop: () => void;
   onClear: () => void;
   disabled: boolean;
-  canStart: boolean;
   isRunning: boolean;
   onShowAbout: () => void;
   hasCompletedDebate?: boolean;
@@ -36,7 +35,6 @@ export function SettingsBar({
   onStop,
   onClear,
   disabled,
-  canStart,
   isRunning,
   onShowAbout,
   hasCompletedDebate = false,
@@ -227,7 +225,7 @@ export function SettingsBar({
             ) : (
               <Button
                 onClick={onStart}
-                disabled={!canStart || disabled}
+                disabled={disabled}
                 size="sm"
               >
                 <Play className="mr-2 h-4 w-4" />

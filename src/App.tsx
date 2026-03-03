@@ -128,8 +128,13 @@ function App() {
   };
 
   const startDebate = async () => {
-    if (!apiKey || !prdText.trim()) {
-      setError("Please provide both an API key and a PRD");
+    if (!apiKey) {
+      setError("Please provide an API key");
+      return;
+    }
+
+    if (!prdText.trim()) {
+      setError("Please provide a PRD");
       return;
     }
 
@@ -158,8 +163,6 @@ function App() {
     setHasCompletedDebate(false);
   };
 
-  const canStart = !isRunning && apiKey.trim() !== "" && prdText.trim() !== "";
-
   return (
     <div className="h-screen flex flex-col">
       <AboutModal isOpen={showAboutModal} onClose={() => setShowAboutModal(false)} />
@@ -175,7 +178,6 @@ function App() {
         onStop={stopDebate}
         onClear={clearDebate}
         disabled={isRunning}
-        canStart={canStart}
         isRunning={isRunning}
         onShowAbout={() => setShowAboutModal(true)}
         hasCompletedDebate={hasCompletedDebate}
