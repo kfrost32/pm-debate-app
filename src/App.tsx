@@ -28,6 +28,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("debate");
   const [error, setError] = useState<string | null>(null);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [hasCompletedDebate, setHasCompletedDebate] = useState(false);
 
   const currentMessageRef = useRef<Message | null>(null);
   const orchestratorRef = useRef<DebateOrchestrator | null>(null);
@@ -106,6 +107,7 @@ function App() {
 
       case "debate_complete":
         setIsRunning(false);
+        setHasCompletedDebate(true);
         orchestratorRef.current = null;
         break;
 
@@ -153,6 +155,7 @@ function App() {
     setSynthesis(null);
     setError(null);
     setActiveTab("debate");
+    setHasCompletedDebate(false);
   };
 
   const canStart = !isRunning && apiKey.trim() !== "" && prdText.trim() !== "";
@@ -174,8 +177,8 @@ function App() {
         disabled={isRunning}
         canStart={canStart}
         isRunning={isRunning}
-        prdLength={prdText.length}
         onShowAbout={() => setShowAboutModal(true)}
+        hasCompletedDebate={hasCompletedDebate}
       />
 
       {error && (

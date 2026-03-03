@@ -16,8 +16,8 @@ interface SettingsBarProps {
   disabled: boolean;
   canStart: boolean;
   isRunning: boolean;
-  prdLength?: number;
   onShowAbout: () => void;
+  hasCompletedDebate?: boolean;
 }
 
 const DEPTH_DESCRIPTIONS: Record<DepthLevel, string> = {
@@ -38,8 +38,8 @@ export function SettingsBar({
   disabled,
   canStart,
   isRunning,
-  prdLength = 0,
   onShowAbout,
+  hasCompletedDebate = false,
 }: SettingsBarProps) {
 
   const toggleAgent = (agentId: string) => {
@@ -231,20 +231,21 @@ export function SettingsBar({
                 size="sm"
               >
                 <Play className="mr-2 h-4 w-4" />
-                Start Debate
+                {hasCompletedDebate ? "Start New Debate" : "Start Debate"}
               </Button>
             )}
           </div>
 
           <div className="flex items-center gap-3">
-            {!isRunning && prdLength > 0 && (
+            {!isRunning && hasCompletedDebate && (
               <Button
                 onClick={onClear}
                 variant="outline"
                 size="sm"
                 disabled={disabled}
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4 mr-2" />
+                New Debate
               </Button>
             )}
             <button

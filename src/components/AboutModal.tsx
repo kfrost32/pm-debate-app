@@ -33,7 +33,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
           <div className="space-y-3 text-sm text-foreground/90">
             <p>
-              This app uses multiple AI agents, each with different product management focuses and biases, todebate your PRD across rounds. They have separate context about the PRD and respond to each other, push back on ideas, and hopefully uncover things a single pass would miss.
+              This app uses multiple AI agents, each with different product management focuses and biases, to debate your PRD across rounds. They have separate context about the PRD and respond to each other, push back on ideas, and hopefully uncover things a single pass would miss.
             </p>
 
             <p>
