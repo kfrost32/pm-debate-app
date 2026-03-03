@@ -99,6 +99,10 @@ export class DebateOrchestrator {
       while (round <= rounds && !debateComplete && !this.isCancelled) {
         // Round 1: Everyone speaks in parallel (establish positions)
         if (round === 1) {
+          // Show first agent thinking while all process in parallel
+          const firstAgentId = selectedAgentIds[0];
+          this.onEvent({ type: "agent_start", agentId: firstAgentId, round });
+
           // Start all agents in parallel and collect their responses
           const agentPromises = selectedAgentIds.map(agentId =>
             this.runAgentTurnSilent(agentId, round, prdText, responses, depth)
