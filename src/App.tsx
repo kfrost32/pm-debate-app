@@ -3,6 +3,7 @@ import { SplitView } from "./components/SplitView";
 import { PrdPanel } from "./components/PrdPanel";
 import { RightPanel } from "./components/RightPanel";
 import { SettingsBar } from "./components/SettingsBar";
+import { AboutModal } from "./components/AboutModal";
 import { DebateOrchestrator, type DebateEventType } from "./lib/debate";
 import { DEFAULT_AGENTS, type DepthLevel } from "./lib/agents";
 
@@ -26,6 +27,7 @@ function App() {
   const [synthesis, setSynthesis] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("debate");
   const [error, setError] = useState<string | null>(null);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   const currentMessageRef = useRef<Message | null>(null);
   const orchestratorRef = useRef<DebateOrchestrator | null>(null);
@@ -39,6 +41,13 @@ function App() {
       setApiKey(envKey);
     } else if (saved) {
       setApiKey(saved);
+    }
+
+    // Show about modal on first visit
+    const hasVisited = localStorage.getItem("pm_debate_has_visited");
+    if (!hasVisited) {
+      setShowAboutModal(true);
+      localStorage.setItem("pm_debate_has_visited", "true");
     }
   }, []);
 
@@ -68,8 +77,9 @@ function App() {
         break;
 
       case "agent_complete":
-        if (currentMessageRef.current) {
-          setMessages((prev) => [...prev, currentMessageRef.current!]);
+        if (currentMessageRef.current && currentMessageRef.current.content.trim()) {
+          const completedMessage = { ...currentMessageRef.current };
+          setMessages((prev) => [...prev, completedMessage]);
         }
         setIsTyping(false);
         setCurrentAgentId(null);
@@ -149,6 +159,8 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col">
+      <AboutModal isOpen={showAboutModal} onClose={() => setShowAboutModal(false)} />
+
       <SettingsBar
         rounds={rounds}
         onRoundsChange={setRounds}
@@ -163,6 +175,7 @@ function App() {
         canStart={canStart}
         isRunning={isRunning}
         prdLength={prdText.length}
+        onShowAbout={() => setShowAboutModal(true)}
       />
 
       {error && (
@@ -188,6 +201,7 @@ function App() {
             synthesis={synthesis}
             activeTab={activeTab}
             onTabChange={setActiveTab}
+            totalRounds={rounds}
           />
         }
       />

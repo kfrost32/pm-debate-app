@@ -29,13 +29,13 @@ export function AgentMessage({ agentId, content, round }: AgentMessageProps) {
   const highlightedContent = highlightMentions(content);
 
   return (
-    <div className="group">
+    <div className="group animate-fade-in">
       <div
-        className="rounded-lg p-5 bg-white border transition-all duration-200"
+        className="rounded-lg p-5 bg-white border transition-all duration-200 hover:shadow-md"
       >
         <div className="flex items-start gap-4">
           <div className={cn(
-            "shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white text-lg shadow-soft",
+            "shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white text-lg shadow-soft transition-transform duration-200",
             agent.color
           )}>
             {agent.avatar}
