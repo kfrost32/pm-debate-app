@@ -45,14 +45,8 @@ export class DebateOrchestrator {
   private agentMemories: Map<string, AgentMemory> = new Map();
 
   constructor(apiKey: string, onEvent: (event: DebateEventType) => void) {
-    // Use proxy endpoint in production, direct API in development
-    const baseURL = import.meta.env.PROD
-      ? `${window.location.origin}/api/anthropic-stream`
-      : 'https://api.anthropic.com/v1';
-
     this.anthropic = new Anthropic({
-      apiKey: import.meta.env.PROD ? 'proxy' : apiKey,
-      baseURL,
+      apiKey,
       dangerouslyAllowBrowser: true,
     });
     this.onEvent = onEvent;
