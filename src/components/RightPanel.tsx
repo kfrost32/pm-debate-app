@@ -65,8 +65,7 @@ export function RightPanel({
 
     const agreementSection = synthesis.match(/##?\s*(?:1\.?\s*)?(?:\*\*)?Where the PMs agreed(?:\*\*)?([\s\S]*?)(?=##?\s*(?:2\.?\s*)?(?:\*\*)?Where they disagreed|$)/i);
     const disagreementSection = synthesis.match(/##?\s*(?:2\.?\s*)?(?:\*\*)?Where they disagreed(?:\*\*)?([\s\S]*?)(?=##?\s*(?:3\.?\s*)?(?:\*\*)?Top recommended|$)/i);
-    const recommendationsSection = synthesis.match(/##?\s*(?:3\.?\s*)?(?:\*\*)?Top recommended PRD changes(?:\*\*)?([\s\S]*?)(?=##?\s*(?:4\.?\s*)?(?:\*\*)?Overall PRD grade|$)/i);
-    const gradeMatch = synthesis.match(/grade[:\s]+([A-F][+-]?)/i);
+    const recommendationsSection = synthesis.match(/##?\s*(?:3\.?\s*)?(?:\*\*)?Top recommended PRD changes(?:\*\*)?([\s\S]*$)/i);
 
     const countListItems = (text: string) => {
       const lines = text.split('\n').filter(l => l.trim().match(/^[-*\d]/));
@@ -77,7 +76,6 @@ export function RightPanel({
       agreements: agreementSection ? countListItems(agreementSection[1]) : 0,
       disagreements: disagreementSection ? countListItems(disagreementSection[1]) : 0,
       recommendations: recommendationsSection ? countListItems(recommendationsSection[1]) : 0,
-      grade: gradeMatch ? gradeMatch[1] : null,
     };
   };
 
@@ -226,7 +224,7 @@ export function RightPanel({
                     </div>
                   ) : metrics ? (
                     <>
-                      <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="grid grid-cols-3 gap-3 mb-4">
                         <div className="flex items-center gap-2 text-sm">
                           <span className="text-green-600">✓</span>
                           <span className="text-muted-foreground">{metrics.agreements} agreement{metrics.agreements !== 1 ? 's' : ''}</span>
@@ -239,12 +237,6 @@ export function RightPanel({
                           <span className="text-blue-600">📝</span>
                           <span className="text-muted-foreground">{metrics.recommendations} recommendation{metrics.recommendations !== 1 ? 's' : ''}</span>
                         </div>
-                        {metrics.grade && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-purple-600">📊</span>
-                            <span className="text-muted-foreground">Grade: {metrics.grade}</span>
-                          </div>
-                        )}
                       </div>
                       <Button onClick={() => onTabChange("synthesis")} size="sm" className="shadow-subtle">
                         View Full Summary

@@ -308,6 +308,6 @@ Provide exactly 4 sections:
 
 3. **Top recommended PRD changes** - List 5-7 specific, actionable improvements. One sentence each. Prioritize by impact.
 
-4. **Overall PRD grade** - Assign a grade (A/B/C/D/F) with 2-3 sentences justifying it.
+4. **Overall assessment** - 2-3 sentences giving your overall take on the PRD quality and readiness.
 
 Be direct. No fluff. No explanations of your process. Just the essential insights.`;
