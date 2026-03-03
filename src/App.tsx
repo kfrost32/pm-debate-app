@@ -34,14 +34,19 @@ function App() {
   const orchestratorRef = useRef<DebateOrchestrator | null>(null);
 
   useEffect(() => {
-    // Check for environment variable first, then fall back to localStorage
-    const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-    const saved = localStorage.getItem("anthropic_api_key");
+    // In production, we use a proxy so no API key is needed in the browser
+    if (import.meta.env.PROD) {
+      setApiKey("proxy"); // Placeholder value for production
+    } else {
+      // In development, check for environment variable first, then fall back to localStorage
+      const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+      const saved = localStorage.getItem("anthropic_api_key");
 
-    if (envKey) {
-      setApiKey(envKey);
-    } else if (saved) {
-      setApiKey(saved);
+      if (envKey) {
+        setApiKey(envKey);
+      } else if (saved) {
+        setApiKey(saved);
+      }
     }
 
     // Show about modal on first visit
@@ -128,7 +133,8 @@ function App() {
   };
 
   const startDebate = async () => {
-    if (!apiKey) {
+    // Only check for API key in development
+    if (!import.meta.env.PROD && !apiKey) {
       setError("Please provide an API key");
       return;
     }
