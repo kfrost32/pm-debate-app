@@ -24,7 +24,6 @@ interface SettingsBarProps {
 const DEPTH_DESCRIPTIONS: Record<DepthLevel, string> = {
   brief: "100-150 words per response. Quick, focused feedback on critical issues.",
   moderate: "200-350 words per response. Balanced analysis with key concerns.",
-  detailed: "400-600 words per response. Comprehensive, in-depth evaluation.",
 };
 
 export function SettingsBar({
@@ -121,7 +120,7 @@ export function SettingsBar({
                   </p>
                 </div>
                 <div className="space-y-2">
-                  {(["brief", "moderate", "detailed"] as const).map((level) => (
+                  {(["brief", "moderate"] as const).map((level) => (
                     <button
                       key={level}
                       onClick={() => onDepthChange(level)}

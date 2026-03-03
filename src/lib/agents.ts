@@ -225,7 +225,7 @@ Write naturally in first person. Keep your response between 200-350 words. Groun
 
 export const DEFAULT_AGENTS = ["maya", "derek", "priya"];
 
-export type DepthLevel = "brief" | "moderate" | "detailed";
+export type DepthLevel = "brief" | "moderate";
 
 const DEPTH_CONFIGS = {
   brief: {
@@ -235,10 +235,6 @@ const DEPTH_CONFIGS = {
   moderate: {
     wordRange: "200-350 words",
     instruction: "Provide balanced analysis with key concerns and recommendations.",
-  },
-  detailed: {
-    wordRange: "400-600 words",
-    instruction: "Provide comprehensive, in-depth analysis with thorough reasoning and multiple specific examples.",
   },
 };
 

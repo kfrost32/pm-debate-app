@@ -11,7 +11,6 @@ const PRICING = {
 const DEPTH_TOKEN_ESTIMATES: Record<DepthLevel, { min: number; max: number }> = {
   brief: { min: 100, max: 200 },
   moderate: { min: 250, max: 450 },
-  detailed: { min: 500, max: 750 },
 };
 
 export interface CostEstimate {

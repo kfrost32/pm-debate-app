@@ -19,7 +19,7 @@ export function PrdPanel({ value, onChange, disabled }: PrdPanelProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        placeholder="Paste your PRD here in markdown format..."
+        placeholder="Paste your PRD here"
         className="flex-1 w-full resize-none font-mono text-sm border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 p-5"
       />
     </div>
