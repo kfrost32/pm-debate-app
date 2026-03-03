@@ -47,10 +47,19 @@ export class DebateOrchestrator {
   constructor(apiKey: string, onEvent: (event: DebateEventType) => void) {
     // In production, use our proxy. In development, use direct API with local key
     const useProxy = import.meta.env.PROD;
+    const baseURL = useProxy ? `${window.location.origin}/api` : 'https://api.anthropic.com';
+
+    console.log('[DebateOrchestrator] Config:', {
+      isProd: import.meta.env.PROD,
+      useProxy,
+      baseURL,
+      hasApiKey: !!apiKey,
+      apiKeyLength: apiKey?.length
+    });
 
     this.anthropic = new Anthropic({
       apiKey: useProxy ? 'not-needed' : apiKey, // Proxy doesn't need real key in request
-      baseURL: useProxy ? `${window.location.origin}/api/v1` : 'https://api.anthropic.com/v1',
+      baseURL,
       dangerouslyAllowBrowser: true,
     });
     this.onEvent = onEvent;
