@@ -47,7 +47,7 @@ export class DebateOrchestrator {
   constructor(apiKey: string, onEvent: (event: DebateEventType) => void) {
     // Use proxy endpoint in production, direct API in development
     const baseURL = import.meta.env.PROD
-      ? '/api/anthropic-stream'
+      ? `${window.location.origin}/api/anthropic-stream`
       : 'https://api.anthropic.com/v1';
 
     this.anthropic = new Anthropic({
