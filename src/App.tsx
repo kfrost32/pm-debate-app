@@ -34,14 +34,19 @@ function App() {
   const orchestratorRef = useRef<DebateOrchestrator | null>(null);
 
   useEffect(() => {
-    // Check for environment variable first, then fall back to localStorage
-    const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-    const saved = localStorage.getItem("anthropic_api_key");
+    // In production, no API key needed (uses server-side proxy)
+    // In development, check for environment variable first, then fall back to localStorage
+    if (import.meta.env.PROD) {
+      setApiKey('proxy'); // Placeholder - actual key is on server
+    } else {
+      const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+      const saved = localStorage.getItem("anthropic_api_key");
 
-    if (envKey) {
-      setApiKey(envKey);
-    } else if (saved) {
-      setApiKey(saved);
+      if (envKey) {
+        setApiKey(envKey);
+      } else if (saved) {
+        setApiKey(saved);
+      }
     }
 
     // Show about modal on first visit

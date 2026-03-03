@@ -45,8 +45,12 @@ export class DebateOrchestrator {
   private agentMemories: Map<string, AgentMemory> = new Map();
 
   constructor(apiKey: string, onEvent: (event: DebateEventType) => void) {
+    // In production, use our proxy. In development, use direct API with local key
+    const useProxy = import.meta.env.PROD;
+
     this.anthropic = new Anthropic({
-      apiKey,
+      apiKey: useProxy ? 'not-needed' : apiKey, // Proxy doesn't need real key in request
+      baseURL: useProxy ? `${window.location.origin}/api/v1` : 'https://api.anthropic.com/v1',
       dangerouslyAllowBrowser: true,
     });
     this.onEvent = onEvent;
