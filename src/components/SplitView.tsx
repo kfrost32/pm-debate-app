@@ -7,7 +7,7 @@ interface SplitViewProps {
 }
 
 export function SplitView({ left, right }: SplitViewProps) {
-  const [leftWidth, setLeftWidth] = useState(50);
+  const [leftWidth, setLeftWidth] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleMouseDown = () => {
@@ -32,13 +32,12 @@ export function SplitView({ left, right }: SplitViewProps) {
 
   return (
     <div
-      className="flex h-screen w-full bg-background"
+      className="flex flex-1 w-full bg-background overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
       <div
-        className="overflow-auto border-r"
         style={{ width: `${leftWidth}%` }}
       >
         {left}
@@ -52,7 +51,7 @@ export function SplitView({ left, right }: SplitViewProps) {
         onMouseDown={handleMouseDown}
       />
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1">
         {right}
       </div>
     </div>

@@ -1,9 +1,11 @@
-import { Eye, EyeOff, Key, Repeat, Layers, Users, Play } from "lucide-react";
+import { Eye, EyeOff, Key, Repeat, Layers, Users, Play, StopCircle, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { AGENTS, type DepthLevel } from "../lib/agents";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Popover } from "./ui/popover";
+import { ApiKeyWarning } from "./ApiKeyWarning";
+import { CostEstimator } from "./CostEstimator";
 
 interface SettingsBarProps {
   apiKey: string;
@@ -15,8 +17,12 @@ interface SettingsBarProps {
   selectedAgents: string[];
   onAgentsChange: (agents: string[]) => void;
   onStart: () => void;
+  onStop: () => void;
+  onClear: () => void;
   disabled: boolean;
   canStart: boolean;
+  isRunning: boolean;
+  prdLength?: number;
 }
 
 const DEPTH_DESCRIPTIONS: Record<DepthLevel, string> = {
@@ -35,8 +41,12 @@ export function SettingsBar({
   selectedAgents,
   onAgentsChange,
   onStart,
+  onStop,
+  onClear,
   disabled,
   canStart,
+  isRunning,
+  prdLength = 0,
 }: SettingsBarProps) {
   const [showApiKey, setShowApiKey] = useState(false);
 
@@ -53,7 +63,7 @@ export function SettingsBar({
   };
 
   return (
-    <div className="border-b bg-card/50 backdrop-blur-sm shadow-subtle">
+    <div className="sticky top-0 z-20 border-b bg-card/50 backdrop-blur-sm">
       <div className="px-5 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -97,6 +107,7 @@ export function SettingsBar({
                   {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
+              {apiKey && <ApiKeyWarning />}
             </div>
           </Popover>
 
@@ -261,14 +272,46 @@ export function SettingsBar({
           </Popover>
           </div>
 
-          <Button
-            onClick={onStart}
-            disabled={!canStart || disabled}
-            className="shadow-subtle"
-          >
-            <Play className="mr-2 h-4 w-4" />
-            Start Debate
-          </Button>
+          <div className="flex items-center gap-3">
+            {!isRunning && prdLength > 0 && (
+              <CostEstimator
+                prdLength={prdLength}
+                rounds={rounds}
+                agentCount={selectedAgents.length}
+                depth={depth}
+              />
+            )}
+            {!isRunning && prdLength > 0 && (
+              <Button
+                onClick={onClear}
+                variant="outline"
+                size="sm"
+                disabled={disabled}
+                className="shadow-subtle"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+            )}
+            {isRunning ? (
+              <Button
+                onClick={onStop}
+                variant="destructive"
+                className="shadow-subtle"
+              >
+                <StopCircle className="mr-2 h-4 w-4" />
+                Stop Debate
+              </Button>
+            ) : (
+              <Button
+                onClick={onStart}
+                disabled={!canStart || disabled}
+                className="shadow-subtle"
+              >
+                <Play className="mr-2 h-4 w-4" />
+                Start Debate
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

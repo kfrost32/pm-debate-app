@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { SplitView } from "./components/SplitView";
 import { PrdPanel } from "./components/PrdPanel";
-import { DebatePanel } from "./components/DebatePanel";
+import { RightPanel } from "./components/RightPanel";
 import { SettingsBar } from "./components/SettingsBar";
-import { SynthesisModal } from "./components/SynthesisModal";
 import { DebateOrchestrator, type DebateEventType } from "./lib/debate";
 import { DEFAULT_AGENTS, type DepthLevel } from "./lib/agents";
 
@@ -23,11 +22,13 @@ function App() {
   const [isRunning, setIsRunning] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentAgentId, setCurrentAgentId] = useState<string | null>(null);
+  const [currentRound, setCurrentRound] = useState<number>(0);
   const [synthesis, setSynthesis] = useState<string | null>(null);
-  const [showSynthesis, setShowSynthesis] = useState(false);
+  const [activeTab, setActiveTab] = useState("debate");
   const [error, setError] = useState<string | null>(null);
 
   const currentMessageRef = useRef<Message | null>(null);
+  const orchestratorRef = useRef<DebateOrchestrator | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("anthropic_api_key");
@@ -47,41 +48,27 @@ function App() {
       case "agent_start":
         setIsTyping(true);
         setCurrentAgentId(event.agentId);
+        setCurrentRound(event.round);
         currentMessageRef.current = {
           agentId: event.agentId,
           content: "",
           round: event.round,
         };
-        // Add the initial empty message immediately
-        setMessages((prev) => [
-          ...prev,
-          {
-            agentId: event.agentId,
-            content: "",
-            round: event.round,
-          },
-        ]);
         break;
 
       case "agent_chunk":
         if (currentMessageRef.current) {
           currentMessageRef.current.content += event.chunk;
-          // Update only the last message with accumulated content
-          setMessages((prev) => {
-            if (prev.length === 0) return prev;
-            const newMessages = [...prev];
-            newMessages[newMessages.length - 1] = {
-              ...newMessages[newMessages.length - 1],
-              content: currentMessageRef.current!.content,
-            };
-            return newMessages;
-          });
         }
         break;
 
       case "agent_complete":
+        if (currentMessageRef.current) {
+          setMessages((prev) => [...prev, currentMessageRef.current!]);
+        }
         setIsTyping(false);
         setCurrentAgentId(null);
+        setCurrentRound(0);
         currentMessageRef.current = null;
         break;
 
@@ -99,11 +86,19 @@ function App() {
         setIsTyping(false);
         setCurrentAgentId(null);
         setSynthesis(event.content);
-        setShowSynthesis(true);
+        setActiveTab("synthesis");
         break;
 
       case "debate_complete":
         setIsRunning(false);
+        orchestratorRef.current = null;
+        break;
+
+      case "debate_cancelled":
+        setIsRunning(false);
+        setIsTyping(false);
+        setCurrentAgentId(null);
+        orchestratorRef.current = null;
         break;
 
       case "error":
@@ -125,40 +120,24 @@ function App() {
     setSynthesis(null);
     setError(null);
     setIsRunning(true);
-    setShowSynthesis(false);
+    setActiveTab("debate");
 
     const orchestrator = new DebateOrchestrator(apiKey, handleDebateEvent);
+    orchestratorRef.current = orchestrator;
     await orchestrator.runDebate(prdText, rounds, selectedAgents, depth);
   };
 
-  const exportDebate = () => {
-    const timestamp = new Date().toISOString().split("T")[0];
-    let content = `# PM Debate — PRD Evaluation\n\n`;
-    content += `**Date:** ${timestamp}\n`;
-    content += `**Rounds:** ${rounds}\n`;
-    content += `**Agents:** ${selectedAgents.join(", ").toUpperCase()}\n\n`;
-    content += `---\n\n`;
-    content += `## Original PRD\n\n${prdText}\n\n`;
-    content += `---\n\n## Debate Transcript\n\n`;
-
-    messages.forEach((msg) => {
-      content += `### ${msg.agentId.toUpperCase()} - Round ${msg.round}\n\n`;
-      content += `${msg.content}\n\n---\n\n`;
-    });
-
-    if (synthesis) {
-      content += `## Synthesis & Recommendations\n\n${synthesis}\n`;
+  const stopDebate = () => {
+    if (orchestratorRef.current) {
+      orchestratorRef.current.cancelDebate();
     }
+  };
 
-    const blob = new Blob([content], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pm-debate-${timestamp}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const clearDebate = () => {
+    setMessages([]);
+    setSynthesis(null);
+    setError(null);
+    setActiveTab("debate");
   };
 
   const canStart = !isRunning && apiKey.trim() !== "" && prdText.trim() !== "";
@@ -175,8 +154,12 @@ function App() {
         selectedAgents={selectedAgents}
         onAgentsChange={setSelectedAgents}
         onStart={startDebate}
+        onStop={stopDebate}
+        onClear={clearDebate}
         disabled={isRunning}
         canStart={canStart}
+        isRunning={isRunning}
+        prdLength={prdText.length}
       />
 
       {error && (
@@ -194,23 +177,17 @@ function App() {
           />
         }
         right={
-          <DebatePanel
+          <RightPanel
             messages={messages}
             isTyping={isTyping}
             currentAgentId={currentAgentId}
+            currentRound={currentRound}
             synthesis={synthesis}
-            onShowSynthesis={() => setShowSynthesis(true)}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
           />
         }
       />
-
-      {showSynthesis && synthesis && (
-        <SynthesisModal
-          synthesis={synthesis}
-          onClose={() => setShowSynthesis(false)}
-          onExport={exportDebate}
-        />
-      )}
     </div>
   );
 }

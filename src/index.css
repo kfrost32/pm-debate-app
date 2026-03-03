@@ -56,6 +56,37 @@
 }
 
 @layer utilities {
+  /* Override Tailwind border utilities to use 0.5px */
+  .border {
+    border-width: 0.5px !important;
+  }
+
+  .border-t {
+    border-top-width: 0.5px !important;
+  }
+
+  .border-r {
+    border-right-width: 0.5px !important;
+  }
+
+  .border-b {
+    border-bottom-width: 0.5px !important;
+  }
+
+  .border-l {
+    border-left-width: 0.5px !important;
+  }
+
+  .border-x {
+    border-left-width: 0.5px !important;
+    border-right-width: 0.5px !important;
+  }
+
+  .border-y {
+    border-top-width: 0.5px !important;
+    border-bottom-width: 0.5px !important;
+  }
+
   .shadow-subtle {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
   }

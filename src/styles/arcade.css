@@ -1,0 +1,413 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Arcade Font */
+.arcade-font {
+  font-family: 'Press Start 2P', cursive;
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* CRT Screen Effect */
+.crt-screen {
+  position: relative;
+  background: #000;
+  overflow: hidden;
+}
+
+.crt-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+.crt-screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* Scanlines */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 3px
+  );
+  pointer-events: none;
+  z-index: 100;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* RGB Split Text Effect */
+.rgb-text {
+  position: relative;
+  color: #fff;
+}
+
+.rgb-text::before,
+.rgb-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.8;
+}
+
+.rgb-text::before {
+  animation: glitch-1 0.3s infinite;
+  color: #ff00ff;
+  z-index: -1;
+}
+
+.rgb-text::after {
+  animation: glitch-2 0.3s infinite;
+  color: #00ffff;
+  z-index: -2;
+}
+
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  33% {
+    transform: translate(-2px, 0);
+  }
+  66% {
+    transform: translate(2px, 0);
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  33% {
+    transform: translate(2px, 0);
+  }
+  66% {
+    transform: translate(-2px, 0);
+  }
+}
+
+/* Pixel Borders */
+.pixel-border {
+  border: 4px solid currentColor;
+  border-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><rect x="0" y="0" width="4" height="4" fill="currentColor"/><rect x="8" y="0" width="4" height="4" fill="currentColor"/><rect x="0" y="8" width="4" height="4" fill="currentColor"/><rect x="8" y="8" width="4" height="4" fill="currentColor"/><rect x="4" y="0" width="4" height="4" fill="transparent"/><rect x="0" y="4" width="4" height="4" fill="transparent"/></svg>') 4 repeat;
+  image-rendering: pixelated;
+}
+
+.pixel-border-simple {
+  border: 4px solid currentColor;
+  box-shadow:
+    inset -4px -4px 0 rgba(0, 0, 0, 0.3),
+    inset 4px 4px 0 rgba(255, 255, 255, 0.1);
+  image-rendering: pixelated;
+}
+
+/* Screen Glow */
+.screen-glow {
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.3),
+    0 0 40px rgba(255, 0, 255, 0.2),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Arcade Button */
+.arcade-button {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  padding: 12px 24px;
+  border: 4px solid currentColor;
+  background: linear-gradient(180deg, currentColor 0%, color-mix(in srgb, currentColor 80%, black) 100%);
+  color: white;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  image-rendering: pixelated;
+  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow:
+    0 6px 0 color-mix(in srgb, currentColor 60%, black),
+    0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.arcade-button:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 2px 0 color-mix(in srgb, currentColor 60%, black),
+    0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.arcade-button:hover {
+  filter: brightness(1.2);
+}
+
+/* Insert Coin Blink */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
+
+/* Pixel Fade In */
+@keyframes pixel-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.pixel-fade-in {
+  animation: pixel-fade-in 0.3s ease-out;
+}
+
+/* Screen Shake */
+@keyframes screen-shake {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate(-4px, 0);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translate(4px, 0);
+  }
+}
+
+.screen-shake {
+  animation: screen-shake 0.5s;
+}
+
+/* Damage Flash */
+@keyframes damage-flash {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+}
+
+.damage-flash {
+  animation: damage-flash 0.3s;
+}
+
+/* HP Bar Styles */
+.hp-bar-container {
+  background: #000;
+  border: 3px solid #fff;
+  padding: 2px;
+  image-rendering: pixelated;
+}
+
+.hp-bar-fill {
+  height: 16px;
+  background: linear-gradient(180deg, #00ff00 0%, #008800 100%);
+  transition: width 0.5s ease-out;
+  image-rendering: pixelated;
+  position: relative;
+}
+
+.hp-bar-fill.low {
+  background: linear-gradient(180deg, #ffff00 0%, #ff8800 100%);
+}
+
+.hp-bar-fill.critical {
+  background: linear-gradient(180deg, #ff0000 0%, #880000 100%);
+  animation: pulse-red 0.5s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Arcade Colors */
+.arcade-cyan {
+  color: #00ffff;
+}
+
+.arcade-magenta {
+  color: #ff00ff;
+}
+
+.arcade-yellow {
+  color: #ffff00;
+}
+
+.arcade-green {
+  color: #00ff00;
+}
+
+.arcade-red {
+  color: #ff0000;
+}
+
+/* Pixel Art Sprite Base */
+.pixel-sprite {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  transform-origin: center center;
+}
+
+/* Character Idle Animation */
+@keyframes idle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.sprite-idle {
+  animation: idle-bounce 2s ease-in-out infinite;
+}
+
+/* Character Attack Animation */
+@keyframes attack-lunge {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(20px) scale(1.1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.sprite-attack {
+  animation: attack-lunge 0.5s ease-out;
+}
+
+/* Character Hit Animation */
+@keyframes hit-shake {
+  0%, 100% {
+    transform: translateX(0);
+    filter: brightness(1);
+  }
+  25%, 75% {
+    transform: translateX(-4px);
+    filter: brightness(2) saturate(0);
+  }
+  50% {
+    transform: translateX(4px);
+    filter: brightness(2) saturate(0);
+  }
+}
+
+.sprite-hit {
+  animation: hit-shake 0.4s;
+}
+
+/* Victory Animation */
+@keyframes victory-jump {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.1);
+  }
+}
+
+.sprite-victory {
+  animation: victory-jump 0.6s ease-in-out 2;
+}
+
+/* Floating Damage Number */
+@keyframes float-up {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-60px) scale(1.3);
+    opacity: 0;
+  }
+}
+
+.damage-number {
+  animation: float-up 1s ease-out forwards;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 20px;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.damage-number.critical {
+  font-size: 28px;
+  animation: float-up 1.2s ease-out forwards, shake-damage 0.1s 3;
+}
+
+@keyframes shake-damage {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
