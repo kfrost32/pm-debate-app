@@ -97,11 +97,42 @@ export class DebateOrchestrator {
       let debateComplete = false;
 
       while (round <= rounds && !debateComplete && !this.isCancelled) {
-        // Round 1: Everyone speaks in order (establish positions)
+        // Round 1: Everyone speaks in parallel (establish positions)
         if (round === 1) {
-          for (const agentId of selectedAgentIds) {
+          // Start all agents in parallel and collect their responses
+          const agentPromises = selectedAgentIds.map(agentId =>
+            this.runAgentTurnSilent(agentId, round, prdText, responses, depth)
+          );
+
+          // Wait for all to complete
+          const allResponses = await Promise.all(agentPromises);
+
+          if (this.isCancelled) break;
+
+          // Now display them sequentially with a brief delay
+          for (let i = 0; i < allResponses.length; i++) {
             if (this.isCancelled) break;
-            await this.runAgentTurn(agentId, round, prdText, responses, depth);
+
+            const { agentId, content } = allResponses[i];
+
+            // Show agent start
+            this.onEvent({ type: "agent_start", agentId, round });
+
+            // Stream the content quickly (simulate typing at ~500 chars/sec)
+            const chunkSize = 50;
+            for (let j = 0; j < content.length; j += chunkSize) {
+              const chunk = content.slice(j, j + chunkSize);
+              this.onEvent({ type: "agent_chunk", agentId, chunk });
+              await new Promise(resolve => setTimeout(resolve, 100)); // 100ms per chunk = ~500 chars/sec
+            }
+
+            // Mark complete
+            this.onEvent({ type: "agent_complete", agentId, round, content });
+
+            // Brief pause before next agent (except for last one)
+            if (i < allResponses.length - 1) {
+              await new Promise(resolve => setTimeout(resolve, 300));
+            }
           }
         } else {
           // Round 2+: Dynamic turn-taking based on urgency
@@ -186,6 +217,91 @@ export class DebateOrchestrator {
     } finally {
       this.abortController = null;
     }
+  }
+
+  private async runAgentTurnSilent(
+    agentId: string,
+    round: number,
+    prdText: string,
+    responses: AgentResponse[],
+    depth: DepthLevel
+  ): Promise<{ agentId: string; content: string }> {
+    const agent = AGENTS[agentId];
+    if (!agent) return { agentId, content: '' };
+
+    const conversationHistory = this.buildConversationHistory(responses);
+    const keyPoints = round > 1 ? this.extractKeyPoints(responses) : undefined;
+    const memory = this.agentMemories.get(agentId);
+
+    const prompt = this.buildEnhancedPrompt(
+      agent,
+      round,
+      prdText,
+      conversationHistory,
+      depth,
+      keyPoints,
+      memory,
+      responses
+    );
+
+    let fullContent = "";
+
+    // Build cached system blocks for cost optimization
+    const systemBlocks: any[] = [
+      {
+        type: "text",
+        text: agent.systemPrompt,
+        cache_control: { type: "ephemeral" }
+      }
+    ];
+
+    // Cache the PRD in system context (saves tokens on repeated debates)
+    if (round === 1) {
+      systemBlocks.push({
+        type: "text",
+        text: `## PRD Being Reviewed\n\n${prdText}`,
+        cache_control: { type: "ephemeral" }
+      });
+    }
+
+    const stream = await this.anthropic.messages.stream({
+      model: "claude-sonnet-4-5-20250929",
+      max_tokens: 1500,
+      system: systemBlocks,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: prompt,
+              cache_control: round > 1 ? { type: "ephemeral" } : undefined
+            }
+          ],
+        },
+      ],
+    });
+
+    for await (const chunk of stream) {
+      if (
+        chunk.type === "content_block_delta" &&
+        chunk.delta.type === "text_delta"
+      ) {
+        fullContent += chunk.delta.text;
+      }
+    }
+
+    // Update agent memory and responses
+    this.updateAgentMemory(agentId, round, fullContent);
+
+    responses.push({
+      agentId,
+      round,
+      content: fullContent,
+      timestamp: Date.now(),
+    });
+
+    return { agentId, content: fullContent };
   }
 
   private async runAgentTurn(
