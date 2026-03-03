@@ -1,4 +1,4 @@
-import { Repeat, Layers, Users, Play, StopCircle, RotateCcw, Info } from "lucide-react";
+import { Repeat, Layers, Users, Play, StopCircle, RotateCcw } from "lucide-react";
 import { AGENTS, type DepthLevel } from "../lib/agents";
 import { Button } from "./ui/button";
 import { Popover } from "./ui/popover";
