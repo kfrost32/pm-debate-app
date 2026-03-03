@@ -3,9 +3,9 @@ export const config = {
   runtime: 'edge',
 };
 
-// Rate limiting: 5 debates per hour per user
-const RATE_LIMIT_REQUESTS = 5;
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in ms
+// Rate limiting: 10 debates per day per user
+const RATE_LIMIT_REQUESTS = 10;
+const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours in ms
 
 function getRateLimitInfo(cookies: string): { count: number; resetTime: number } {
   const match = cookies.match(/rate_limit=([^;]+)/);
@@ -45,10 +45,10 @@ export default async function handler(req: Request) {
 
   // Check if over limit
   if (rateLimitInfo.count >= RATE_LIMIT_REQUESTS) {
-    const minutesLeft = Math.ceil((rateLimitInfo.resetTime - now) / 60000);
+    const hoursLeft = Math.ceil((rateLimitInfo.resetTime - now) / (60 * 60 * 1000));
     return new Response(
       JSON.stringify({
-        error: `Rate limit exceeded. You can make ${RATE_LIMIT_REQUESTS} debates per hour. Try again in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}.`
+        error: `You've hit your daily limit of ${RATE_LIMIT_REQUESTS} debates. Come back in ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} to run more.`
       }),
       {
         status: 429,
