@@ -31,8 +31,13 @@ function App() {
   const orchestratorRef = useRef<DebateOrchestrator | null>(null);
 
   useEffect(() => {
+    // Check for environment variable first, then fall back to localStorage
+    const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
     const saved = localStorage.getItem("anthropic_api_key");
-    if (saved) {
+
+    if (envKey) {
+      setApiKey(envKey);
+    } else if (saved) {
       setApiKey(saved);
     }
   }, []);
@@ -145,8 +150,6 @@ function App() {
   return (
     <div className="h-screen flex flex-col">
       <SettingsBar
-        apiKey={apiKey}
-        onApiKeyChange={setApiKey}
         rounds={rounds}
         onRoundsChange={setRounds}
         depth={depth}

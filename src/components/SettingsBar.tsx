@@ -1,15 +1,10 @@
-import { Eye, EyeOff, Key, Repeat, Layers, Users, Play, StopCircle, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { Repeat, Layers, Users, Play, StopCircle, RotateCcw } from "lucide-react";
 import { AGENTS, type DepthLevel } from "../lib/agents";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Popover } from "./ui/popover";
-import { ApiKeyWarning } from "./ApiKeyWarning";
 import { CostEstimator } from "./CostEstimator";
 
 interface SettingsBarProps {
-  apiKey: string;
-  onApiKeyChange: (key: string) => void;
   rounds: number;
   onRoundsChange: (rounds: number) => void;
   depth: DepthLevel;
@@ -32,8 +27,6 @@ const DEPTH_DESCRIPTIONS: Record<DepthLevel, string> = {
 };
 
 export function SettingsBar({
-  apiKey,
-  onApiKeyChange,
   rounds,
   onRoundsChange,
   depth,
@@ -48,7 +41,6 @@ export function SettingsBar({
   isRunning,
   prdLength = 0,
 }: SettingsBarProps) {
-  const [showApiKey, setShowApiKey] = useState(false);
 
   const toggleAgent = (agentId: string) => {
     if (selectedAgents.includes(agentId)) {
@@ -67,52 +59,6 @@ export function SettingsBar({
       <div className="px-5 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Popover
-            trigger={
-              <Button
-                variant="outline"
-                size="sm"
-                type="button"
-                disabled={disabled}
-                className="shadow-subtle"
-              >
-                <Key className="h-4 w-4 mr-2" />
-                API Key
-              </Button>
-            }
-            align="start"
-          >
-            <div className="space-y-3">
-              <div>
-                <h3 className="text-sm font-semibold text-foreground mb-1">API Key</h3>
-                <p className="text-xs text-muted-foreground">
-                  Enter your Anthropic API key
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  type={showApiKey ? "text" : "password"}
-                  value={apiKey}
-                  onChange={(e) => onApiKeyChange(e.target.value)}
-                  placeholder="sk-ant-..."
-                  disabled={disabled}
-                  className="font-mono text-sm"
-                />
-                <Button
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                >
-                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-              {apiKey && <ApiKeyWarning />}
-            </div>
-          </Popover>
-
-          <div className="h-4 w-px bg-border" />
-
           <Popover
             trigger={
               <Button

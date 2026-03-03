@@ -30,6 +30,28 @@ A React application that simulates multi-agent PM debates to evaluate Product Re
 npm install
 ```
 
+### Configuration
+
+You can provide your Anthropic API key in two ways:
+
+**Option 1: Environment Variable (Recommended)**
+
+Create a `.env` file in the project root:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your API key:
+
+```
+VITE_ANTHROPIC_API_KEY=your_api_key_here
+```
+
+**Option 2: In-App Input**
+
+Enter your API key in the settings bar at the top of the app. It will be stored in localStorage.
+
 ### Development
 
 ```bash
@@ -46,7 +68,7 @@ npm run build
 
 ## Usage
 
-1. **Enter your API key** in the settings bar at the top (stored in localStorage)
+1. **Configure your API key** (see Configuration section above)
 2. **Paste your PRD** in the left panel
 3. **Configure the debate** (optional):
    - Click the settings icon to adjust rounds (default: 2)
